@@ -1,0 +1,41 @@
+plugins {
+	id 'java'
+}
+
+ext {
+	byteBuddyVersion='1.5.9'
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile 'org.mockito:mockito-core:2.3.5'
+	runtime "net.bytebuddy:byte-buddy:$byteBuddyVersion"
+	runtime "net.bytebuddy:byte-buddy-agent:$byteBuddyVersion"
+}
+
+task dist(dependsOn: jar) {
+	doLast {
+		delete {
+			delete 'dist'
+		}
+		
+		copy {
+		    into 'dist'
+			from jar
+			from (configurations.runtime) {
+				into 'libs'
+			}
+		}
+		
+		def classpathUnix = files(file('dist/libs').listFiles()).collect{"./${it.name}"}.join(':')
+		file('dist/run.sh') << "java -cp ${jar.archiveName}:${classpathUnix} test.TestMockFinal"
+		file('dist/run-agent.sh') << "java -javaagent:byte-buddy-agent-${byteBuddyVersion}.jar -cp ${jar.archiveName}:${classpathUnix} test.TestMockFinal"
+		
+		def classpathWindows = files(file('dist/libs').listFiles()).collect{"./${it.name}"}.join(';')
+		file('dist/run.bat') << "java -cp ${jar.archiveName};${classpathWindows} test.TestMockFinal"
+		file('dist/run-agent.bat') << "java -javaagent:byte-buddy-agent-${byteBuddyVersion}.jar -cp ${jar.archiveName};${classpathWindows} test.TestMockFinal"
+	}
+}

@@ -30,11 +30,11 @@ task dist(dependsOn: jar) {
 			}
 		}
 		
-		def classpathUnix = files(file('dist/libs').listFiles()).collect{"./${it.name}"}.join(':')
+		def classpathUnix = files(file('dist/libs').listFiles()).collect{"./libs/${it.name}"}.join(':')
 		file('dist/run.sh') << "java -cp ${jar.archiveName}:${classpathUnix} test.TestMockFinal"
 		file('dist/run-agent.sh') << "java -javaagent:byte-buddy-agent-${byteBuddyVersion}.jar -cp ${jar.archiveName}:${classpathUnix} test.TestMockFinal"
 		
-		def classpathWindows = files(file('dist/libs').listFiles()).collect{"./${it.name}"}.join(';')
+		def classpathWindows = files(file('dist/libs').listFiles()).collect{"./libs/${it.name}"}.join(';')
 		file('dist/run.bat') << "java -cp ${jar.archiveName};${classpathWindows} test.TestMockFinal"
 		file('dist/run-agent.bat') << "java -javaagent:byte-buddy-agent-${byteBuddyVersion}.jar -cp ${jar.archiveName};${classpathWindows} test.TestMockFinal"
 	}

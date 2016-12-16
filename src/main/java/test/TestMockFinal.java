@@ -10,6 +10,7 @@ final class FinalClass {
 
 public class TestMockFinal {
   public static void main(String[] args) {
+	System.out.println("java.home=" + System.getProperty("java.home"));  
     FinalClass cl = mock(FinalClass.class);
     when(cl.m1()).thenReturn(-1);
     if (cl.m1() != -1) {
